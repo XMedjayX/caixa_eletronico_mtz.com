@@ -1,4 +1,4 @@
-lizarLogin<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -57,7 +57,6 @@ lizarLogin<!DOCTYPE html>
         alert("Usuário não encontrado"); // Usuário não encontrado
       }
     }
-    }
 
     function realizarLogin() {
       const inputUsername = document.getElementById('username').value;
@@ -65,13 +64,13 @@ lizarLogin<!DOCTYPE html>
 
       const papelUsuario = verificarLogin(inputUsername, inputPassword);
 
-      if (papelUsuario) {
-        alert(`Login bem-sucedido para usuário ${papelUsuario}. Bem vindo, ${inputUsername}`);
+      if (papelUsuario === 'admin') {
+        window.location.href = "interface_admin.html";
+        alert(`Login realizado com sucesso. Bem vindo Usuário ${papelUsuario}.`)
       }
-      if (papelUsuario === admin) {
-        window.location.href = "interface_admin.html"
-      } else {
-      	window.location.href = "interface_comum.html"
+      if (papelUsuario === 'comum') {
+      	window.location.href = "interface_comum.html";
+        alert(`Login realizado com sucesso. Bem vindo Usuário ${papelUsuario}.`)
       }
     }
   </script>
