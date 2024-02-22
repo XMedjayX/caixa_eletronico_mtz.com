@@ -65,18 +65,32 @@
   <div class="flex-container">
     <form action="#" class="form-container" id="reabastecimento-form">
         <div class="form-header">Reabasteça o caixa eletrônico Admin</div>
-        <div style="text-align: center;">Insira a senha de reabastecimento para adicionar 100 notas de cada tipo ao caixa eletrônico.</div>
+        <div style="text-align: center;">Insira a senha para abastecer o caixa eletronico com o máximo de notas. Capacidade 100 notas de cada valor.</div>
         <div class="form-input" style="text-align: center;">
           <input type="password" id="reabastecimento-password" placeholder="Insira senha aqui:">
         </div>
         <div class="form-input">
           <button type="button" id="reabastecimento" onclick="verificarSenhaAdministrador()" class="reabastecimento-button">Confirmar Reabastecimento</button>
         </div>
+        <div class="form-input">
+          <button type="button" id="continuar-saque" onclick="redirecionarParaSaque()" class="withdraw-button">Continuar para Saque</button>
+        </div>
+
+        <div class="form-input">
+          <button type="button" id="deslogar" onclick="deslogarUsuario()" class="withdraw-button">Deslogar</button>
+        </div>
     </form>
+    <div class="notes-container" style="width: 45%; background-color: #F0E68C; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
+      <div style="text-align: center; padding: 1rem; background-color: #ff9800; color: #fff; font-size: 1.5rem;">Notas Disponíveis para Saque</div>
+      <ul id="notas-list" style="list-style-type: none; padding: 0; text-align: center;"></ul>
+    </div>
   </div>
 <script>
   // Verifica se o usuário está autenticado como admin
   const userRole = localStorage.getItem('userRole');
+
+  // Inicializa a variável reabastecimentoRealizado
+  let reabastecimentoRealizado = false;
 
   if (userRole !== 'admin') {
     alert('Acesso não autorizado. Faça login como administrador.');
@@ -95,7 +109,6 @@
       2: 0
     },
 
-    
     realizarReabastecimento() {
       // Verifica se o usuário está autenticado como admin
       const userRole = localStorage.getItem('userRole');
@@ -120,7 +133,16 @@
       }
 
       // Exibe uma mensagem indicando que o reabastecimento foi realizado com sucesso
-      alert("Reabastecimento realizado com sucesso! O caixa foi reabastecido com 100 notas de cada denominação.");
+      alert("Reabastecimento realizado com sucesso! O caixa está na capacidade máxima de notas.");
+
+      // Salva as notas abastecidas no localStorage
+      localStorage.setItem('notasAbastecidas', JSON.stringify(caixaEletronico.notas));
+
+      // Atualiza a variável reabastecimentoRealizado para true
+      reabastecimentoRealizado = true;
+
+      // Chama a função para exibir as notas disponíveis ao realizar o reabastecimento
+      exibirNotasDisponiveis();
       } 
     };
 
@@ -131,11 +153,58 @@
     if (senhaInput === "reabasteca-mestre") {
       // Senha correta, realiza o reabastecimento
       caixaEletronico.realizarReabastecimento();
+
+      // Desabilita o botão de reabastecimento após a conclusão
+      document.getElementById("reabastecimento").disabled = true;
+
+      // Habilita os botões de continuar para saque e deslogar após o reabastecimento
+      document.getElementById("continuar-saque").disabled = false;
+      document.getElementById("deslogar").disabled = false;
     } else {
       // Senha incorreta, exibe uma mensagem de erro (você pode personalizar a mensagem conforme necessário)
       alert("Senha de administrador incorreta. Tente novamente.");
     }
   }
+
+  function redirecionarParaSaque() {
+    // Redireciona para a página de saque apenas se o reabastecimento foi realizado
+    window.location.href = "interface_saque.html";
+    }
+
+
+  function deslogarUsuario() {
+    // Limpa o localStorage removendo a role do usuário
+    localStorage.removeItem('userRole');
+
+    // Redireciona o usuário para a página de login (index.html)
+    window.location.href = "index.html";
+  }
+
+  // Função para exibir as informações de notas disponíveis na lista
+  function exibirNotasDisponiveis() {
+    const notasList = document.getElementById("notas-list");
+    notasList.innerHTML = ""; // Limpa a lista antes de atualizar
+
+    // Obtém as notas do localStorage
+    const notasDisponiveis = JSON.parse(localStorage.getItem('notasAbastecidas'));
+
+    if (notasDisponiveis) {
+      // Adiciona as notas à lista ordenada
+      for (const nota in notasDisponiveis) {
+        const listItem = document.createElement("li");
+        listItem.textContent = `${nota} reais: ${notasDisponiveis[nota]} notas disponíveis`;
+        notasList.appendChild(listItem);
+      }
+    } else {
+      // Se não houver notas disponíveis, exibe uma mensagem
+      const listItem = document.createElement("li");
+      listItem.textContent = "Nenhuma nota disponível no momento.";
+      notasList.appendChild(listItem);
+    }
+  }
+
+  // Chama a função para exibir as notas disponíveis ao carregar a página
+  exibirNotasDisponiveis();
 </script>
 </body>
 </html>
