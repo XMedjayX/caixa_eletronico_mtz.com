@@ -63,16 +63,20 @@
       const inputPassword = document.getElementById('password').value;
 
       const papelUsuario = verificarLogin(inputUsername, inputPassword);
+      if (papelUsuario) {
+        // Armazena o papel do usuário no localStorage
+        localStorage.setItem('userRole', papelUsuario);
 
-      if (papelUsuario === 'admin') {
-        window.location.href = "interface_admin.html";
-        alert(`Login realizado com sucesso. Bem vindo Usuário ${papelUsuario}.`)
+        if (papelUsuario === 'admin') {
+          window.location.href = "interface_admin.html";
+          alert(`Login realizado com sucesso. Bem vindo Usuário ${papelUsuario}.`)
+        }
+        if (papelUsuario === 'comum') {
+          window.location.href = "interface_saque.html";
+          alert(`Login realizado com sucesso. Bem vindo Usuário ${papelUsuario}.`)
+        }
       }
-      if (papelUsuario === 'comum') {
-        window.location.href = "interface_comum.html";
-        alert(`Login realizado com sucesso. Bem vindo Usuário ${papelUsuario}.`)
-      }
-    }
+    }  
   </script>
 </body>
 </html>
