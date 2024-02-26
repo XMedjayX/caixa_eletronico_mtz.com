@@ -65,7 +65,39 @@
   <div class="flex-container">
     <form action="#" class="form-container" id="reabastecimento-form">
         <div class="form-header">Reabasteça o caixa eletrônico Admin</div>
-        <div style="text-align: center;">Insira a senha para abastecer o caixa eletronico com o máximo de notas. Capacidade 100 notas de cada valor.</div>
+        <div class="form-input">
+          <label for="nota-radius">Escolha a nota para reabastecimento:</label>
+          <br>
+          <input type="radio" id="nota-2" name="nota-radius" value="2">
+          <label for="nota-2">R$ 2,00</label>
+          <br>
+          <input type="radio" id="nota-5" name="nota-radius" value="5">
+          <label for="nota-5">R$ 5,00</label>
+          <br>
+          <input type="radio" id="nota-10" name="nota-radius" value="10">
+          <label for="nota-10">R$ 10,00</label>
+          <br>
+          <input type="radio" id="nota-20" name="nota-radius" value="20">
+          <label for="nota-20">R$ 20,00</label>
+          <br>
+          <input type="radio" id="nota-50" name="nota-radius" value="50">
+          <label for="nota-50">R$ 50,00</label>
+          <br>
+          <input type="radio" id="nota-100" name="nota-radius" value="100">
+          <label for="nota-100">R$ 100,00</label>
+        </div>
+
+        <div class="form-input">
+          <label for="quantidade">Selecione a quantidade:</label>
+          <br>
+          <select id="quantidade" name="quantidade">
+            <option value="10">10 notas</option>
+            <option value="50">50 notas</option>
+            <option value="100">100 notas</option>
+            <option value="1000">1000 notas</option>
+          </select>
+        </div>
+        <div style="text-align: center;">Insira a senha para abastecer o caixa eletronico com os valores escolhidos.</div>
         <div class="form-input" style="text-align: center;">
           <input type="password" id="reabastecimento-password" placeholder="Insira senha aqui:">
         </div>
@@ -118,6 +150,13 @@
         window.location.href = "index.html"; // Redireciona para a página de login
         return;
       }
+
+      // Obter a escolha da nota
+      const notaEscolhida = document.querySelector('input[name="nota-radius"]:checked');
+
+      // Obter a quantidade de notas selecionada
+      const quantidadeSelecionada = parseInt(document.getElementById("quantidade").value);
+      
       // Verifica a senha do administrador antes de prosseguir
       const senhaInput = document.getElementById("reabastecimento-password").value;
 
@@ -127,16 +166,17 @@
         return;
       }
 
-      // Adiciona 100 notas para todas as denominações existentes
-      for (const nota in caixaEletronico.notas) {
-        caixaEletronico.notas[nota] += 100;
-      }
+      // Obtém as notas já existentes no localStorage
+      const notasAntigas = JSON.parse(localStorage.getItem('notasAbastecidas')) || {};
+
+      // Adiciona a quantidade escolhida da nota escolhida às notas existentes
+      notasAntigas[notaEscolhida.value] = (notasAntigas[notaEscolhida.value] || 0) + quantidadeSelecionada;
+
+      // Salva as notas abastecidas atualizadas no localStorage
+      localStorage.setItem('notasAbastecidas', JSON.stringify(notasAntigas));
 
       // Exibe uma mensagem indicando que o reabastecimento foi realizado com sucesso
-      alert("Reabastecimento realizado com sucesso! O caixa está na capacidade máxima de notas.");
-
-      // Salva as notas abastecidas no localStorage
-      localStorage.setItem('notasAbastecidas', JSON.stringify(caixaEletronico.notas));
+      alert("Reabastecimento realizado com sucesso! O caixa foi reabastecido.");
 
       // Atualiza a variável reabastecimentoRealizado para true
       reabastecimentoRealizado = true;
@@ -153,9 +193,6 @@
     if (senhaInput === "reabasteca-mestre") {
       // Senha correta, realiza o reabastecimento
       caixaEletronico.realizarReabastecimento();
-
-      // Desabilita o botão de reabastecimento após a conclusão
-      document.getElementById("reabastecimento").disabled = true;
 
       // Habilita os botões de continuar para saque e deslogar após o reabastecimento
       document.getElementById("continuar-saque").disabled = false;

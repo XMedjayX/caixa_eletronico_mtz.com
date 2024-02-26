@@ -152,6 +152,20 @@
           .map(([nota, quantidade]) => `R$ ${parseFloat(nota).toFixed(2)}: ${quantidade} nota(s)`)
           .join('\n');
 
+      // Adicionando ao dataLayer
+      window.dataLayer = window.dataLayer || [];
+      const saqueData = {
+        'event': 'saque_realizado',  // Nome do evento personalizado
+      };
+
+      // Adiciona as informações sobre as notas ao objeto do dataLayer
+      Object.entries(notasSaque).forEach(([nota, quantidade]) => {
+        saqueData[`nota_${nota}`] = quantidade > 0 ? parseFloat(nota).toFixed(2) : undefined;
+        saqueData[`quantidade_${nota}`] = quantidade || 0;
+      });
+
+      window.dataLayer.push(saqueData);    
+
       // Exibe um alerta com as informações do saque
       alert(saqueInfo);
 
@@ -166,6 +180,22 @@
       }
     }
   };
+
+  // Adicionando validação com Regex para aceitar números inteiros ou decimais com até duas casas
+  document.getElementById("input-saque").addEventListener("input", function () {
+    const inputValue = this.value;
+
+    // Regex para aceitar números inteiros ou decimais com até duas casas
+    const regex = /^\d+(\.\d{1,2})?$/;
+
+    // Verifica se o valor inserido atende ao padrão
+    if (!regex.test(inputValue)) {
+      alert("Valor inválido. Insira um número inteiro ou decimal com até duas casas.");
+      // Remove caracteres inválidos
+      this.value = inputValue.slice(0, -1);
+    }
+  });
+
   // Modificação para exibir a quantidade de notas disponíveis
   const notaDisponivelDiv = document.getElementById('nota-disponivel');
   function atualizarQuantidadeNotas() {
